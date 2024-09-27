@@ -1,75 +1,6 @@
-#[derive(Debug)]
-enum Media {
-    Book {
-        title: String,
-        author: String,
-    },
-    Movie {
-        title: String,
-        director: String,
-    },
-    Audiobook {
-        title: String
-    },
-    Podcast(u32),
-    Placeholder
-}
-
-impl Media {
-    fn print(&self) {
-        println!("{:#?}", self);
-    }
-
-    fn description(&self) -> String {
-        if let Self::Audiobook { title } = self {
-            return title.clone();
-        }
-
-        if let Self::Book { title, author: _ } = self {
-            return title.clone();
-        }
-
-        if let Self::Movie { title, director: _ } = self {
-            return title.clone();
-        }
-
-        "".to_string()
-    }
-
-    fn description2(&self) -> String {
-        match self {
-            Self::Audiobook { title } => title.clone(),
-
-            Self::Book { title, author: _ } => {
-                title.clone()
-            }
-
-            Self::Movie { title, director: _ } => {
-                title.clone()
-            }
-
-            Self::Podcast(number) => number.to_string(),
-            Self::Placeholder => "".to_string()
-        }
-    }
-}
-
-
-#[derive(Debug)]
-struct Catalog {
-    items: Vec<Media>,
-}
-
-impl Catalog {
-    fn new() -> Self {
-        Catalog { items: Vec::new() }
-    }
-
-    fn add(&mut self, item: Media) {
-        self.items.push(item);
-    }
-}
-
+mod content;
+use content::Catalog;
+use content::Media;
 
 fn main() {
     let mut catalog = Catalog::new();
@@ -112,6 +43,41 @@ fn main() {
     catalog.add(movie);
     catalog.add(podcast);
     catalog.add(placeholder);
+    let index = 1;
 
-    println!("{:#?}", catalog);
+    match catalog.items.get(index) {
+        Some(item) => {
+            println!("{:#?}", item.description());
+        }
+
+        None => {
+            println!("There is no item at that index");
+        }
+    }
+
+    let item = catalog.get_by_index(2);
+
+    match item {
+        catalog::MightHave::Value(media) => {
+            println!("{:#?} here2", media.description());
+        }
+
+        catalog::MightHave::None => {
+            println!("There is no item at that index");
+        }
+    }
+
+    let item = catalog.get_by_index2(1);
+
+    match item {
+        Some(item) => {
+            println!("{:#?} here", item.description());
+        }
+
+        None => {
+            println!("There is no item at that index");
+        }
+    }
+
+    println!("{:#?} zzz", catalog.items.get(1).unwrap_or(&Media::Placeholder));
 }
