@@ -1,6 +1,7 @@
+use std::io::Error;
 use std::fs;
 
-fn main() {
+fn main() -> Result<(), Error> {
     let mut errors = vec![];
 
     match fs::read_to_string("logs.txt") {
@@ -27,6 +28,7 @@ fn main() {
         }
     }
 
+    // Expect impl
     let text = fs::read_to_string("logs.txt")
         .expect("Error reading logs.txt");
 
@@ -38,4 +40,17 @@ fn main() {
     ).expect("Error writing errors.txt");
 
     println!("{:#?}", errors);
+
+    // Impl with try operator
+    let text = fs::read_to_string("logs2.txt")?;
+
+    fs::write(
+        "errors.txt",
+        text.split("\n")
+            .filter(|line| line.starts_with("ERROR"))
+            .collect::<Vec<&str>>().join("\n")
+    )?;
+
+    //
+    Ok(())
 }
